@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block css %}
+<link href="{% static 'style/day.css' %}" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+
+<div class="day-table">
+  <h1 class="day-table__title">오늘의 기록</h1>
+  <h3 class="day-table__total">
+    {% if account.balance %}
+    {{ account.balance }}
+    {% else %}
+    아직 아무 기록도 없습니다.
+    {% endif %}
+  </h3>
+  <!-- 가계부 기록 추가 버튼 -->
+  <div class="d-flex">
+    <button type="button" class="day-table__btn--make btn btn-dark ms-auto" data-bs-toggle="modal"
+      data-bs-target="#exampleModalOne">
+      기록 추가하기
+    </button>
+  </div>
+  <!-- 가계부 기록 추가 버튼과 연결되는 모달 -->
+  <div class="modal fade" id="exampleModalOne" tabindex="-1" aria-labelledby="exampleModalOneLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="make-form" action="" method="POST">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalOneLabel">기록 추가</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {% bootstrap_form make_history_form %}
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="day-table__btn--add btn btn-dark me-auto">저장하기</button>
+            <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">취소하고 닫기</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- 테이블 본문 -->
+  <table class="day-table__table table table-bordered">
+    <thead>
+      <tr class="text-center">
+        <th class="col-1">유형</th>
+        <th class="col-1">대분류</th>
+        <th class="col-1">소분류</th>
+        <th class="col-2">수입</th>
+        <th class="col-2">지출</th>
+        <th class="col-4">메모</th>
+        <th class="col-1">상세</th>
+      </tr>
+    </thead>
+    <tbody class="table-group-divider">
+      {% if today_account_history %}
+      {% for object in today_account_history %}
+      <tr class="text-center">
+        <td>{{ object.consumption_type }}</td>
+        <td>{{ object.main_category }}</td>
+        <td>{{ object.sub_category }}</td>
+        {% if object.breakdown == 0 %}
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        {% elif object.breakdown > 0 %}
+        <td class="day-table__table--positive-number">+{{ object.breakdown }}</td>
+        <td>&nbsp;</td>
+        {% else %}
+        <td>&nbsp;</td>
+        <td class="day-table__table--negative-number">{{ object.breakdown }}</td>
+        {% endif %}
+        <td>{{ object.memo }}</td>
+        <td>
+          <a href="" data-bs-toggle="modal" data-bs-target="#exampleModalTwo-{{ object.pk }}">
+            상세내역
+          </a>
+        </td>
+      </tr>
+      <div class="modal fade" id="exampleModalTwo-{{ object.pk }}" tabindex="-1"
+        aria-labelledby="exampleModalTwo-{{ object.pk }}-Label" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalTwo-{{ object.pk }}-Label">상세 내역</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>소비유형 : {{ object.consumption_type }}</p>
+              <p>대분류 : {{ object.main_category }}</p>
+              <p>소분류 : {{ object.sub_category }}</p>
+              <p>변동 : {{ object.breakdown }}</p>
+              <p>메모 : {{ object.memo }}</p>
+              <p>등록된 날짜 : {{ object.created_at }}</p>
+              <p>마지막으로 수정한 날짜 : {{ object.updated_at }}</p>
+            </div>
+            <div class="modal-footer">
+              <!-- 수정 버튼 -->
+              <div class="d-flex">
+                <button type="button" class="day-table__table--update-btn btn btn-secondary">
+                  수정
+                </button>
+              </div>
+              <!-- 수정과 연결되는 모달 -->
+
+              <!-- 삭제 버튼 -->
+              <a href="{% url 'apps.accountbook:delete' user_pk account_pk object.pk %}"
+                class="btn btn-secondary me-auto">삭제</a>
+              <button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      {% endif %}
+    </tbody>
+  </table>
+  <script>
+    const updateBtn = document.querySelector(".day-table__table--update-btn");
+    updateBtn.addEventListener("click", function () {
+      const modalContentOrigin = document.querySelector(".show > .modal-dialog > .modal-content");
+      const modalDialog = document.querySelector(".show > .modal-dialog");
+      const modalContentUpdate = document.createElement("div");
+      modalContentUpdate.classList.add("modal-content");
+      modalContentUpdate.innerHTML = `
+      <form id="make-form" action="" method="POST">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalThree-{{ object.pk }}-Label">수정하기</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% bootstrap_form make_history_form %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="day-table__btn--add btn btn-dark me-auto">저장하기</button>
+          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">취소하고 닫기</button>
+        </div>
+      </form>`
+      console.log(modalContentUpdate);
+      modalDialog.innerHTML = "";
+      modalDialog.appendChild = modalContentUpdate;
+    });
+  </script>
+</div>
+{% endblock content %}
+
+<!-- data-bs-toggle="modal"
+data-bs-target="#exampleModalThree-{{ object.pk }}"
+<div class="modal fade" id="exampleModalThree-{{ object.pk }}" tabindex="-1"
+  aria-labelledby="exampleModalThree-{{ object.pk }}-Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="make-form" action="" method="POST">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalThree-{{ object.pk }}-Label">수정하기</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% bootstrap_form make_history_form %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="day-table__btn--add btn btn-dark me-auto">저장하기</button>
+          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">취소하고 닫기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> -->

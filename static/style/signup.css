@@ -1,0 +1,22 @@
+.signup {
+  display: flex;
+  justify-content: center;
+}
+
+
+.signup__box {
+  width: 25%;
+}
+
+
+.signup__box--title {
+  text-align: center;
+  margin-top: 5rem;
+  margin-bottom: 5rem;
+}
+
+
+.signup__box--btn {
+  margin-top: 1rem;
+  width: 100%;
+}

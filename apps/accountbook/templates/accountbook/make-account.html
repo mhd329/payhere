@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block css %}
+<link href="{% static 'style/make-account.css' %}" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+<form action="" method="POST">
+  {% csrf_token %}
+  {% bootstrap_form make_account_form %}
+  <button class="btn btn-outline-dark" type="submit">만들기</button>
+</form>
+{% endblock content %}

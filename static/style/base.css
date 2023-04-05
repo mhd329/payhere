@@ -1,3 +1,7 @@
 * {
   font-family: 'NanumSquareNeo';
 }
+
+.main__offcanvas--btn {
+  margin: 2rem;
+}

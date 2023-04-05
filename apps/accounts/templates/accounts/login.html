@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block css %}
+<link href="{% static 'style/login.css' %}" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+
+<div class="login">
+  <div class="login__box">
+    <h1 class="login__box--title">가계부 시작하기</h1>
+    <form action="" method="POST">
+      {% csrf_token %}
+      {% bootstrap_form login_form %}
+      <button type="submit" class="login__box--btn btn btn-outline-dark">로그인</button>
+    </form>
+    <a href="{% url 'apps.accounts:signup' %}" class="login__box--btn btn btn-outline-dark">회원가입</a>
+  </div>
+</div>
+
+{% endblock content %}

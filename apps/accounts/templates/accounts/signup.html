@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block css %}
+<link href="{% static 'style/signup.css' %}" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+
+<div class="signup">
+  <div class="signup__box">
+    <h1 class="signup__box--title">
+      회원가입
+    </h1>
+    <form action="" method="POST">
+      {% csrf_token %}
+      {% bootstrap_form signup_form %}
+      <button type="submit" class="signup__box--btn btn btn-outline-dark">회원가입</button>
+    </form>
+  </div>
+</div>
+
+{% endblock content %}

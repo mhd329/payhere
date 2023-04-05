@@ -1,17 +1,34 @@
 from django.db import models
 from django.core.validators import validate_email
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 # Create your models here.
-class User(AbstractBaseUser):
-    user_email = models.EmailField(
-        error_messages={"unique": "이미 존재하는 이메일입니다."},
-        help_text="이메일을 입력해주세요.",
-        max_length=100,
+
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("이메일을 입력해주세요.")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        return self.create_user(email, password=password, **extra_fields)
+
+
+class User(AbstractUser):
+    username = None
+    email = models.EmailField(
+        verbose_name="이메일",
         unique=True,
         validators=[validate_email],
-        verbose_name="이메일 아이디",
+        error_messages={"unique": "이미 가입된 이메일입니다."},
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -21,12 +38,15 @@ class User(AbstractBaseUser):
         default=False,
         verbose_name="관리자 여부",
     )
-    USERNAME_FIELD = "user_email"
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
 
-    # 유저의 이메일 아이디를 기본으로 출력함
+    # 이메일을 기본으로 출력함
     def __str__(self):
-        return self.user_email
+        return self.email
 
-    #
+    # CustomUserManager를 사용하여 User모델의 objects매니저를 재정의함
+    objects = CustomUserManager()
+
     class Meta:
         db_table = "User"

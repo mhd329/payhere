@@ -1,0 +1,12 @@
+.carousel {
+  margin-top: 10rem;
+}
+
+
+.account {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  height: 30rem;
+}

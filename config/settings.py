@@ -114,7 +114,10 @@ DATABASES = {
         "USER": "payhereuser",
         "PASSWORD": os.getenv("MYSQL_PASSWORD"),
         "HOST": "localhost",
-        "PORT": "3308",  # 3306포트를 사용중이었기 때문에 3308로 바꿈
+        "PORT": "3306",
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
     }
 }
 
@@ -148,7 +151,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
