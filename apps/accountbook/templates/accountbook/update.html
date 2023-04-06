@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block css %}
+<link href="{% static 'style/update.css' %}" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+<div class="update">
+  <form action="" method="POST">
+    {% csrf_token %}
+    {% bootstrap_form update_form %}
+    <div class="d-flex">
+      <button type="submit" class="btn btn-dark ms-auto">수정</button>
+      <a href="{% url 'apps.accountbook:day' user_pk account_pk %}" class="btn btn-outline-dark ms-3">취소</a>
+    </div>
+  </form>
+</div>
+{% endblock content %}

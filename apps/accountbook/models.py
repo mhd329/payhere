@@ -40,7 +40,9 @@ class UserAccount(TimeStampedModel):
 
     title = models.CharField(max_length=20)
     description = models.CharField(max_length=100, blank=True, null=True)
-    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="accounts"
+    )
     # balance로 명명했지만 total이라는 변수명이 좀 더 정확한 것 같다.
     balance = models.IntegerField(default=0)
 
@@ -48,15 +50,7 @@ class UserAccount(TimeStampedModel):
         db_table = "UserAccount"
 
 
-class TodayHistory(TimeStampedModel):
-    """
-    기본키는 아래의 과정을 통해 구성된다.\n
-    1. 모듈을 통해 현지 시각을 불러온다.\n
-    2. 유저의 아이디에 불러온 연월일을 붙인다.\n
-    3. 2의 뒷부분에 django AutoField로 생성된 숫자를 붙인다.\n
-    django에서 기본으로 제공해주는 기본키를 사용하게 되면 AccountTotalHistory와 union할 때 키가 같게 되므로 새로 만들었다.
-    """
-
+class History(TimeStampedModel):
     # 소비 유형은 카드나 현금으로 정해진다.
     CONSUMPTION_TYPE = (
         ("카드", "카드"),
@@ -86,43 +80,4 @@ class TodayHistory(TimeStampedModel):
     memo = models.CharField(max_length=50, verbose_name="메모", blank=True, null=True)
 
     class Meta:
-        db_table = "TodayHistory"
-
-
-class AccountTotalHistory(TimeStampedModel):
-    """
-    TodayHistory 테이블과는 id 필드를 제외하고 완벽히 동일한 모델이다.\n
-    id 필드가 다른 이유는 AccountTotalHistory 테이블은 따로 만들어지는 것이 아니라, 매일의 TodayHistory 데이터가 쌓여 union 되어가며 점차 누적되는 것이므로 서로 값을 합칠 수 있게 컬럼의 수만 같게 했다.\n
-    TodayHistory의 id는 문자열화된 다음 앞에 uid와 날짜가 붙어 하루가 지날 때마다 이 테이블의 아랫 부분에 결합된다.\n
-    예) uid + 20230405 + id == 1202304053
-    """
-
-    id = models.CharField(primary_key=True, max_length=255)
-    CONSUMPTION_TYPE = (
-        ("카드", "카드"),
-        ("현금", "현금"),
-    )
-    MAIN_CATEGORY = (
-        ("의류비", "의류비"),
-        ("식비", "식비"),
-        ("주거비", "주거비"),
-        ("기타", "기타"),
-    )
-    consumption_type = models.CharField(
-        max_length=2, choices=CONSUMPTION_TYPE, default="카드", verbose_name="소비유형"
-    )
-    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    account = models.ForeignKey(
-        UserAccount, verbose_name="계좌", on_delete=models.CASCADE
-    )
-    breakdown = models.IntegerField(default=0, verbose_name="액수")
-    main_category = models.CharField(
-        max_length=8, choices=MAIN_CATEGORY, default="기타", verbose_name="대분류"
-    )
-    sub_category = models.CharField(
-        max_length=30, verbose_name="소분류", blank=True, null=True
-    )
-    memo = models.CharField(max_length=50, verbose_name="메모", blank=True, null=True)
-
-    class Meta:
-        db_table = "AccountTotalHistory"
+        db_table = "History"

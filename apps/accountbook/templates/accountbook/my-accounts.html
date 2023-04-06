@@ -13,7 +13,7 @@
   <div class="carousel-inner">
     {% for account in user_accounts %}
     <div class="carousel-item">
-      <a href="{% url 'apps.accountbook:day' user.pk account.pk %}">
+      <a href="{% url 'apps.accountbook:history' user.pk account.pk %}">
         <div class="account">
           <p>{{ account.title }}</p>
           <p>{{ account.description }}</p>

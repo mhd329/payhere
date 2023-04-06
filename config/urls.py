@@ -19,7 +19,8 @@ from apps.accounts import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.login),
-    path("accounts/", include("apps.accounts.urls")),
-    path("accountbook/", include("apps.accountbook.urls")),
+    # path("", views.login),
+    # path("accounts/", include("apps.accounts.urls")),
+    path("api/accounts/v1/", include("apps.accounts.urls")),
+    path("api/accountbook/v1/", include("apps.accountbook.urls")),
 ]

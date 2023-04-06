@@ -30,7 +30,7 @@ class MakeMyAccountForm(forms.ModelForm):
             ),
             "balance": forms.NumberInput(
                 attrs={
-                    "placeholder": "총액을 설정해주세요. (기본 0원으로 설정됩니다.)",
+                    "placeholder": "총액을 설정해주세요. (필수 입력사항, 기본 0원으로 설정됩니다.)",
                 }
             ),
         }
@@ -38,7 +38,7 @@ class MakeMyAccountForm(forms.ModelForm):
 
 class MakeHistoryForm(forms.ModelForm):
     class Meta:
-        model = TodayHistory
+        model = History
         fields = (
             "consumption_type",
             "main_category",
@@ -63,7 +63,7 @@ class MakeHistoryForm(forms.ModelForm):
             ),
             "breakdown": forms.NumberInput(
                 attrs={
-                    "placeholder": "변동액을 설정해주세요. (입력이 없으면 0원으로 설정됩니다.)",
+                    "placeholder": "변동액을 설정해주세요. (필수 입력사항, 기본 0원)",
                 }
             ),
             "memo": forms.Textarea(
